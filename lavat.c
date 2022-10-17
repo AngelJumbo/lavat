@@ -7,13 +7,13 @@
 #include <time.h>
 #include <unistd.h>
 
-typedef struct ball {
+typedef struct {
   int x;
   int y;
   int dx;
   int dy;
 } Ball;
-
+static char *custom = NULL;
 static short color = TB_DEFAULT;
 static int nballs = 10;
 static short speedMult = 1;
@@ -32,7 +32,7 @@ int main(int argc, char *argv[]) {
     rim = 0;
 
   time_t t;
-  Ball *balls = (Ball *)malloc(sizeof(Ball) * nballs);
+  Ball *balls = malloc(sizeof(Ball) * nballs);
 
   struct tb_event event = {0};
 
@@ -85,26 +85,50 @@ int main(int argc, char *argv[]) {
                                     (y - balls[k].y) * (y - balls[k].y)));
           }
         }
-
-        if (sum[0] > radius) {
-          if (sum[1] > radius) {
-            tb_printf(i, j, color | TB_BOLD, 0, "█");
-          } else {
-            tb_printf(i, j, color | TB_BOLD, 0, "▀");
-          }
-        } else if (sum[1] > radius) {
-          tb_printf(i, j, color | TB_BOLD, 0, "▄");
-        }
-
-        if (rim) {
-          if (sum[0] > innerRadius) {
-            if (sum[1] > innerRadius) {
-              tb_printf(i, j, color, 0, "█");
+        if (!custom) {
+          if (sum[0] > radius) {
+            if (sum[1] > radius) {
+              tb_printf(i, j, color | TB_BOLD, 0, "█");
             } else {
-              tb_printf(i, j, color | TB_BOLD, color, "▄");
+              tb_printf(i, j, color | TB_BOLD, 0, "▀");
             }
-          } else if (sum[1] > innerRadius) {
-            tb_printf(i, j, color | TB_BOLD, color, "▀");
+          } else if (sum[1] > radius) {
+            tb_printf(i, j, color | TB_BOLD, 0, "▄");
+          }
+
+          if (rim) {
+            if (sum[0] > innerRadius) {
+              if (sum[1] > innerRadius) {
+                tb_printf(i, j, color, 0, "█");
+              } else {
+                tb_printf(i, j, color | TB_BOLD, color, "▄");
+              }
+            } else if (sum[1] > innerRadius) {
+              tb_printf(i, j, color | TB_BOLD, color, "▀");
+            }
+          }
+        }
+        else {
+          if (sum[0] > radius) {
+            if (sum[1] > radius) {
+              tb_printf(i, j, color | TB_BOLD, 0, custom);
+            } else {
+              tb_printf(i, j, color | TB_BOLD, 0, custom);
+            }
+          } else if (sum[1] > radius) {
+            tb_printf(i, j, color | TB_BOLD, 0, custom);
+          }
+
+          if (rim) {
+            if (sum[0] > innerRadius) {
+              if (sum[1] > innerRadius) {
+                tb_printf(i, j, color, 0, custom);
+              } else {
+                tb_printf(i, j, color | TB_BOLD, color, custom);
+              }
+            } else if (sum[1] > innerRadius) {
+              tb_printf(i, j, color | TB_BOLD, color, custom);
+            }
           }
         }
       }
@@ -128,7 +152,7 @@ int parse_options(int argc, char *argv[]) {
   if (argc == 1)
     return 1;
   int c;
-  while ((c = getopt(argc, argv, ":c:s:r:R:b:h")) != -1) {
+  while ((c = getopt(argc, argv, ":c:s:r:R:b:F:h")) != -1) {
     switch (c) {
     case 'c':
       if (strcmp(optarg, "red") == 0) {
@@ -179,6 +203,9 @@ int parse_options(int argc, char *argv[]) {
         return 0;
       }
       break;
+    case 'F':
+      custom = optarg;
+      break;
     case 'h':
       print_help();
       return 0;
@@ -211,6 +238,7 @@ void print_help() {
       "                    This option does not work with the default color\n"
       "  -b NBALLS         Set the number of metaballs in the simulation, from "
       "2 to 20. (default: 10)\n"
+      "  -F CHARS           Allows for a custom set of chars to be used\n"
       "  -h                Print help.\n"
       "From a tty the rim will not work well.\n");
 }
