@@ -17,7 +17,7 @@ OPTIONS:
                     Besides those colors the default one is the normal foreground of your terminal.
   -s SPEED          Set the speed, from 1 to 5. (default 1)
   -r RADIUS         Set the radius of the metaballs, from 1 to 10. (default: 5)
-  -R RIM            Set a "rim" for each metaball, from 1 to 5. (default: none)
+  -R RIM            Set a "rim" for each metaball, size from 1 to 5. (default: none)
                     This option does not work with the default color
   -b NBALLS         Set the number of metaballs in the simulation, from 2 to 20. (default: 10)
   -h                Print help.
