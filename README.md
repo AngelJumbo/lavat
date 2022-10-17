@@ -1,7 +1,13 @@
 # lavat
 
 Little program that simulates a lava lamp in the terminal.
+## Installation
 
+```
+git clone https://github.com/AngelJumbo/lavat
+cd lavat
+sudo make install
+```
 ## Usage
 
 ```
