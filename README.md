@@ -12,6 +12,12 @@ git clone https://github.com/AngelJumbo/lavat
 cd lavat
 sudo make install
 ```
+
+### Arch Linux
+Lavat is also available on the AUR. Install it with your favourite AUR-helper
+```
+$ paru -S lavat-git
+```
 ## Usage
 
 ```
