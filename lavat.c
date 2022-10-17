@@ -6,7 +6,7 @@
 #include <string.h>
 #include <time.h>
 #include <unistd.h>
-
+#include <stdbool.h>
 typedef struct {
   int x;
   int y;
@@ -19,7 +19,7 @@ static int nballs = 10;
 static short speedMult = 1;
 static short rim = 0;
 static float radius = 100;
-
+static bool ova = false;
 int parse_options(int argc, char *argv[]);
 void print_help();
 
@@ -85,7 +85,29 @@ int main(int argc, char *argv[]) {
                                     (y - balls[k].y) * (y - balls[k].y)));
           }
         }
-        if (!custom) {
+        if (ova) {
+          if (sum[0] > radius) {
+            if (sum[1] > radius) {
+              tb_printf(i, j, color | TB_BOLD, 0, "%e");
+            } else {
+              tb_printf(i, j, color | TB_BOLD, 0, "%e");
+            }
+          } else if (sum[1] > radius) {
+            tb_printf(i, j, color | TB_BOLD, 0, "%e");
+          }
+
+          if (rim) {
+            if (sum[0] > innerRadius) {
+              if (sum[1] > innerRadius) {
+                tb_printf(i, j, color, 0, "%e");
+              } else {
+                tb_printf(i, j, color | TB_BOLD, color, "%e");
+              }
+            } else if (sum[1] > innerRadius) {
+              tb_printf(i, j, color | TB_BOLD, color, "%e");
+            }
+          }
+        } else if (!custom) {
           if (sum[0] > radius) {
             if (sum[1] > radius) {
               tb_printf(i, j, color | TB_BOLD, 0, "█");
@@ -107,8 +129,7 @@ int main(int argc, char *argv[]) {
               tb_printf(i, j, color | TB_BOLD, color, "▀");
             }
           }
-        }
-        else {
+        } else {
           if (sum[0] > radius) {
             if (sum[1] > radius) {
               tb_printf(i, j, color | TB_BOLD, 0, custom);
@@ -152,7 +173,7 @@ int parse_options(int argc, char *argv[]) {
   if (argc == 1)
     return 1;
   int c;
-  while ((c = getopt(argc, argv, ":c:s:r:R:b:F:h")) != -1) {
+  while ((c = getopt(argc, argv, ":c:s:r:R:b:F:th")) != -1) {
     switch (c) {
     case 'c':
       if (strcmp(optarg, "red") == 0) {
@@ -206,6 +227,9 @@ int parse_options(int argc, char *argv[]) {
     case 'F':
       custom = optarg;
       break;
+    case 't':
+      ova = true;
+      break;
     case 'h':
       print_help();
       return 0;
@@ -238,7 +262,8 @@ void print_help() {
       "                    This option does not work with the default color\n"
       "  -b NBALLS         Set the number of metaballs in the simulation, from "
       "2 to 20. (default: 10)\n"
-      "  -F CHARS           Allows for a custom set of chars to be used\n"
+      "  -F CHARS          Allows for a custom set of chars to be used\n"
+      "  -t                Toggles a 3d appearance\n"
       "  -h                Print help.\n"
       "From a tty the rim will not work well.\n");
 }
