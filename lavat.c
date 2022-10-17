@@ -107,24 +107,12 @@ int main(int argc, char *argv[]) {
           }
         } else {
           if (sum[0] > radius) {
-            if (sum[1] > radius) {
-              tb_printf(i, j, color | TB_BOLD, 0, custom);
-            } else {
-              tb_printf(i, j, color | TB_BOLD, 0, custom);
-            }
-          } else if (sum[1] > radius) {
             tb_printf(i, j, color | TB_BOLD, 0, custom);
           }
 
           if (rim) {
             if (sum[0] > innerRadius) {
-              if (sum[1] > innerRadius) {
-                tb_printf(i, j, color, 0, custom);
-              } else {
-                tb_printf(i, j, color | TB_BOLD, color, custom);
-              }
-            } else if (sum[1] > innerRadius) {
-              tb_printf(i, j, color | TB_BOLD, color, custom);
+              tb_printf(i, j, color, 0, custom);
             }
           }
         }
