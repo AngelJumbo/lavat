@@ -14,7 +14,7 @@ sudo make install
 ```
 
 ### Arch Linux
-Lavat is also available on the AUR. Install it with your favourite AUR-helper
+Lavat is also available on the AUR [here](https://aur.archlinux.org/packages/lavat-git). Install it with your favourite AUR-helper or manually.
 ```
 $ paru -S lavat-git
 ```
