@@ -34,7 +34,9 @@ OPTIONS:
 
 ![demo 2](https://github.com/AngelJumbo/lavat/blob/main/demo/2.gif?raw=true)
 
-## Credits
+(The cyan isn't quite right because of my color scheme.)
+
+##Credits
 
   - This program was made with [Termbox2](https://github.com/termbox/termbox2).
   - [Metaballs](https://en.wikipedia.org/wiki/Metaballs).
