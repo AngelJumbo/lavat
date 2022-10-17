@@ -3,6 +3,10 @@
 Little program that simulates a lava lamp in the terminal.
 ## Installation
 
+Requirements: 
+
+A Unix-like system, a C compiler and make.
+
 ```
 git clone https://github.com/AngelJumbo/lavat
 cd lavat
