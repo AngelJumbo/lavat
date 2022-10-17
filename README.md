@@ -9,7 +9,7 @@ Requirements: A Unix-like system, a C compiler and make.
 ```
 git clone https://github.com/AngelJumbo/lavat
 cd lavat
-sudo make install
+make install
 ```
 
 ### Arch Linux
