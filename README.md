@@ -48,6 +48,6 @@ OPTIONS:
 
 ## Credits
 
-  - This program was made with [Termbox2](https://github.com/termbox/termbox2).
+  - This program is made with [Termbox2](https://github.com/termbox/termbox2).
   - [Metaballs](https://en.wikipedia.org/wiki/Metaballs).
   - [Lava lamp in JS](https://codeguppy.com/site/tutorials/lava-lamp.html)
