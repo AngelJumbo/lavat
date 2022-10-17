@@ -20,12 +20,13 @@ OPTIONS:
 ## Demo
 
 `lavat -c red -R 1`
-[1](https://github.com/AngelJumbo/lavat/blob/main/demo/1.gif?raw=true)
+
+[demo 1](https://github.com/AngelJumbo/lavat/blob/main/demo/1.gif?raw=true)
 
 
 `lavat -c cyan -R 4 -b 20 -r 2`
 
-[2](https://github.com/AngelJumbo/lavat/blob/main/demo/2.gif?raw=true)
+[demo 2](https://github.com/AngelJumbo/lavat/blob/main/demo/2.gif?raw=true)
 
 ## Credits
 
