@@ -49,9 +49,9 @@ int main(int argc, char *argv[]) {
 
   char *custom2 = custom;
 
-  // if (strlen(custom) > 1 && rim) {
-  //   custom2 = custom + 1;
-  // }
+  if (custom && strlen(custom) > 1 && rim) {
+    custom2 = custom + 1;
+  }
 
   for (int i = 0; i < nballs; i++) {
     balls[i].x = rand() % maxX;
