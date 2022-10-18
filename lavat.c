@@ -209,7 +209,7 @@ int parse_options(int argc, char *argv[]) {
 
 void print_help() {
   printf(
-      "Usage: lavaterm [OPTIONS]\n"
+      "Usage: lavat [OPTIONS]\n"
       "OPTIONS:\n"
       "  -c COLOR          Set color. Available colours: red, blue, yellow, "
       "green, cyan and magenta. \n"
