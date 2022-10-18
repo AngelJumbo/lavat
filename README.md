@@ -20,18 +20,19 @@ $ paru -S lavat-git
 ## Usage
 
 ```
-Usage: lavat [OPTIONS]
+Usage: lavaterm [OPTIONS]
 OPTIONS:
   -c COLOR          Set color. Available colours: red, blue, yellow, green, cyan and magenta.
                     Besides those colors the default one is the normal foreground of your terminal.
   -s SPEED          Set the speed, from 1 to 5. (default 1)
   -r RADIUS         Set the radius of the metaballs, from 1 to 10. (default: 5)
-  -R RIM            Set a "rim" for each metaball, size from 1 to 5. (default: none)
+  -R RIM            Set a "rim" for each metaball, sizes from 1 to 5. (default: none)
                     This option does not work with the default color
   -b NBALLS         Set the number of metaballs in the simulation, from 2 to 20. (default: 10)
+  -F CHARS          Allows for a custom set of chars to be used
   -h                Print help.
-
 ```
+
 ## Demo
 
 `lavat -c red -R 1`
@@ -43,10 +44,16 @@ OPTIONS:
 
 ![demo 2](https://github.com/AngelJumbo/lavat/blob/main/demo/2.gif?raw=true)
 
-(The cyan isn't quite right because of my color scheme.)
+If you send more than one character to the -F option you can have 3d-ish effect.
+
+`lavat -c blue -R2 -F @:::::: -r10`
+
+![demo 2](https://github.com/AngelJumbo/lavat/blob/main/demo/3.gif?raw=true)
+
+(The colors depend on your terminal color scheme.)
 
 ## Credits
 
   - This program is made with [Termbox2](https://github.com/termbox/termbox2).
   - [Metaballs](https://en.wikipedia.org/wiki/Metaballs).
-  - [Lava lamp in JS](https://codeguppy.com/site/tutorials/lava-lamp.html)
+  - [Lava lamp in JavaScript](https://codeguppy.com/site/tutorials/lava-lamp.html)

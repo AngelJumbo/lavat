@@ -218,12 +218,11 @@ void print_help() {
       "  -s SPEED          Set the speed, from 1 to 5. (default 1)\n"
       "  -r RADIUS         Set the radius of the metaballs, from 1 to 10. "
       "(default: 5)\n"
-      "  -R RIM            Set a \"rim\" for each metaball, from 1 to 5. "
+      "  -R RIM            Set a \"rim\" for each metaball, sizes from 1 to 5. "
       "(default: none)\n"
       "                    This option does not work with the default color\n"
       "  -b NBALLS         Set the number of metaballs in the simulation, from "
       "2 to 20. (default: 10)\n"
       "  -F CHARS          Allows for a custom set of chars to be used\n"
-      "  -h                Print help.\n"
-      "From a tty the rim will not work well.\n");
+      "  -h                Print help.\n");
 }
