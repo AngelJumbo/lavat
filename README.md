@@ -50,7 +50,7 @@ If you send more than one character to the -F option you can have 3d-ish effect.
 
 ![demo 2](https://github.com/AngelJumbo/lavat/blob/demo/demo/4.gif?raw=true)
 
-(The colors depend on your terminal color scheme.)
+(The colors depend on your color scheme.)
 
 ## Credits
 
