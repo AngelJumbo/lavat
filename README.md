@@ -48,7 +48,7 @@ If you send more than one character to the -F option you can have 3d-ish effect.
 
 `lavat -c blue -R2 -F @:::::: -r10`
 
-![demo 2](https://github.com/AngelJumbo/lavat/blob/main/demo/3.gif?raw=true)
+![demo 2](https://github.com/AngelJumbo/lavat/blob/main/demo/4.gif?raw=true)
 
 (The colors depend on your terminal color scheme.)
 
