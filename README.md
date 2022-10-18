@@ -46,7 +46,7 @@ OPTIONS:
 
 If you send more than one character to the -F option you can have 3d-ish effect.
 
-`lavat -c blue -R2 -F @:::::: -r10`
+`lavat -c blue -R2 -F @@:::::: -r10`
 
 ![demo 2](https://github.com/AngelJumbo/lavat/blob/demo/demo/4.gif?raw=true)
 

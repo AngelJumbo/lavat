@@ -47,6 +47,12 @@ int main(int argc, char *argv[]) {
 
   float innerRadius = radius * (1 + (float)(0.25 * rim));
 
+  char *custom2 = custom;
+
+  if (strlen(custom) > 1 && rim) {
+    custom2 = custom + 1;
+  }
+
   for (int i = 0; i < nballs; i++) {
     balls[i].x = rand() % maxX;
     balls[i].y = rand() % maxY;
@@ -107,7 +113,7 @@ int main(int argc, char *argv[]) {
           }
         } else {
           if (sum[0] > radius) {
-            tb_printf(i, j, color | TB_BOLD, 0, custom);
+            tb_printf(i, j, color | TB_BOLD, 0, custom2);
           }
 
           if (rim) {
@@ -224,5 +230,7 @@ void print_help() {
       "  -b NBALLS         Set the number of metaballs in the simulation, from "
       "2 to 20. (default: 10)\n"
       "  -F CHARS          Allows for a custom set of chars to be used\n"
+      "                    Only ascii symbols are supported for now, "
+      "wide/unicode chars may appear broken.\n"
       "  -h                Print help.\n");
 }
