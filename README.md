@@ -20,7 +20,7 @@ $ paru -S lavat-git
 ## Usage
 
 ```
-Usage: lavaterm [OPTIONS]
+Usage: lavat [OPTIONS]
 OPTIONS:
   -c COLOR          Set color. Available colours: red, blue, yellow, green, cyan and magenta.
                     Besides those colors the default one is the normal foreground of your terminal.
