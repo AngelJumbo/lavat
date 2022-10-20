@@ -6,18 +6,22 @@
 #include <string.h>
 #include <time.h>
 #include <unistd.h>
+
 typedef struct {
   int x;
   int y;
   int dx;
   int dy;
 } Ball;
+
 static char *custom = NULL;
 static short color = TB_DEFAULT;
 static int nballs = 10;
 static short speedMult = 1;
 static short rim = 0;
+static short contained = 0;
 static float radius = 100;
+
 int parse_options(int argc, char *argv[]);
 void print_help();
 
@@ -43,9 +47,12 @@ int main(int argc, char *argv[]) {
   int maxX = tb_width();
   int maxY = tb_height() * 2;
   int speed = (((1 / (float)(maxX + maxY)) * 5000000) + 50000) / speedMult;
-  radius = radius / (float)(maxX * maxY); //(float)(maxX > maxY ? maxX : maxY);
+  radius = (radius * radius + (float)(maxX * maxY)) / 15000;
 
-  float innerRadius = radius * (1 + (float)(0.25 * rim));
+  int margin = contained ? radius * 6 : 0;
+
+  float sumConst = 0.0225;
+  float sumConst2 = sumConst * (1 + (float)(0.25 * rim));
 
   char *custom2 = custom;
 
@@ -54,8 +61,8 @@ int main(int argc, char *argv[]) {
   }
 
   for (int i = 0; i < nballs; i++) {
-    balls[i].x = rand() % maxX;
-    balls[i].y = rand() % maxY;
+    balls[i].x = rand() % (maxX - 2 * margin) + margin;
+    balls[i].y = rand() % (maxY - 2 * margin) + margin;
     balls[i].dx = (rand() % 2 == 0) ? -1 : 1;
     balls[i].dy = (rand() % 2 == 0) ? -1 : 1;
   }
@@ -65,10 +72,12 @@ int main(int argc, char *argv[]) {
     // move balls
     for (int i = 0; i < nballs; i++) {
 
-      if (balls[i].x + balls[i].dx >= maxX || balls[i].x + balls[i].dx < 0)
+      if (balls[i].x + balls[i].dx >= maxX - margin ||
+          balls[i].x + balls[i].dx < margin)
         balls[i].dx *= -1;
 
-      if (balls[i].y + balls[i].dy >= maxY || balls[i].y + balls[i].dy < 0)
+      if (balls[i].y + balls[i].dy >= maxY - margin ||
+          balls[i].y + balls[i].dy < margin)
         balls[i].dy *= -1;
 
       balls[i].x += balls[i].dx;
@@ -85,39 +94,41 @@ int main(int argc, char *argv[]) {
 
           for (int k = 0; k < nballs; k++) {
             int y = j * 2 + j2;
-            sum[j2] += 1 / ((float)((i - balls[k].x) * (i - balls[k].x) +
-                                    (y - balls[k].y) * (y - balls[k].y)));
+            sum[j2] += (radius * radius) /
+                       ((float)((i - balls[k].x) * (i - balls[k].x) +
+                                (y - balls[k].y) * (y - balls[k].y)));
           }
         }
+
         if (!custom) {
-          if (sum[0] > radius) {
-            if (sum[1] > radius) {
+          if (sum[0] > sumConst) {
+            if (sum[1] > sumConst) {
               tb_printf(i, j, color | TB_BOLD, 0, "█");
             } else {
               tb_printf(i, j, color | TB_BOLD, 0, "▀");
             }
-          } else if (sum[1] > radius) {
+          } else if (sum[1] > sumConst) {
             tb_printf(i, j, color | TB_BOLD, 0, "▄");
           }
 
           if (rim) {
-            if (sum[0] > innerRadius) {
-              if (sum[1] > innerRadius) {
+            if (sum[0] > sumConst2) {
+              if (sum[1] > sumConst2) {
                 tb_printf(i, j, color, 0, "█");
               } else {
                 tb_printf(i, j, color | TB_BOLD, color, "▄");
               }
-            } else if (sum[1] > innerRadius) {
+            } else if (sum[1] > sumConst2) {
               tb_printf(i, j, color | TB_BOLD, color, "▀");
             }
           }
         } else {
-          if (sum[0] > radius) {
+          if (sum[0] > sumConst) {
             tb_printf(i, j, color | TB_BOLD, 0, custom2);
           }
 
           if (rim) {
-            if (sum[0] > innerRadius) {
+            if (sum[0] > sumConst2) {
               tb_printf(i, j, color, 0, custom);
             }
           }
@@ -143,7 +154,7 @@ int parse_options(int argc, char *argv[]) {
   if (argc == 1)
     return 1;
   int c;
-  while ((c = getopt(argc, argv, ":c:s:r:R:b:F:h")) != -1) {
+  while ((c = getopt(argc, argv, ":c:s:r:R:b:F:Ch")) != -1) {
     switch (c) {
     case 'c':
       if (strcmp(optarg, "red") == 0) {
@@ -197,6 +208,9 @@ int parse_options(int argc, char *argv[]) {
     case 'F':
       custom = optarg;
       break;
+    case 'C':
+      contained = 1;
+      break;
     case 'h':
       print_help();
       return 0;
@@ -217,20 +231,23 @@ void print_help() {
   printf(
       "Usage: lavat [OPTIONS]\n"
       "OPTIONS:\n"
-      "  -c COLOR          Set color. Available colours: red, blue, yellow, "
+      "  -c <COLOR>          Set color. Available colours: red, blue, yellow, "
       "green, cyan and magenta. \n"
-      "                    Besides those colors the default one is the normal "
-      "foreground of your terminal.\n"
-      "  -s SPEED          Set the speed, from 1 to 5. (default 1)\n"
-      "  -r RADIUS         Set the radius of the metaballs, from 1 to 10. "
+      "                      Besides those colors the default one is the normal"
+      " foreground of your terminal.\n"
+      "  -s <SPEED>          Set the speed, from 1 to 5. (default 1)\n"
+      "  -r <RADIUS>         Set the radius of the metaballs, from 1 to 10. "
       "(default: 5)\n"
-      "  -R RIM            Set a \"rim\" for each metaball, sizes from 1 to 5. "
+      "  -R <RIM>            Set a rim for each metaball, sizes from 1 to 5."
       "(default: none)\n"
-      "                    This option does not work with the default color\n"
-      "  -b NBALLS         Set the number of metaballs in the simulation, from "
-      "2 to 20. (default: 10)\n"
-      "  -F CHARS          Allows for a custom set of chars to be used\n"
-      "                    Only ascii symbols are supported for now, "
+      "                      This option does not work with the default "
+      "color.\n"
+      "  -b <NBALLS>         Set the number of metaballs in the simulation, "
+      "from 2 to 20. (default: 10)\n"
+      "  -F <CHARS>          Allows for a custom set of chars to be used\n"
+      "                      Only ascii symbols are supported for now, "
       "wide/unicode chars may appear broken.\n"
-      "  -h                Print help.\n");
+      "  -C                  Make metaballs bounce right off the edge of the "
+      "terminal.\n"
+      "  -h                  Print help.\n");
 }
