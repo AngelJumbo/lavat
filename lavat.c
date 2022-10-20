@@ -189,7 +189,7 @@ int parse_options(int argc, char *argv[]) {
       }
       break;
     case 'r':
-      radius = 50 + (11 - atoi(optarg)) * 10;
+      radius = 50 + atoi(optarg) * 10;
       if (radius > 150 || radius < 50) {
         printf("Invalid radius, only values between 1 and 10 are allowed\n");
         return 0;
