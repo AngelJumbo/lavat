@@ -90,7 +90,7 @@ int main(int argc, char *argv[]) {
         // calculate the two halfs of the block at the same time
         float sum[2] = {0};
 
-        for (int j2 = 0; j2 < 2; j2++) {
+        for (int j2 = 0; j2 < (!custom ? 2 : 1); j2++) {
 
           for (int k = 0; k < nballs; k++) {
             int y = j * 2 + j2;
