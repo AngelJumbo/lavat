@@ -32,7 +32,7 @@ OPTIONS:
   -F <CHARS>          Allows for a custom set of chars to be used
                       Only ascii symbols are supported for now, wide/unicode chars may appear broken.
   -C                  Retain the entire lava inside the terminal.
-                      It may not work well with a lot of balls or witha bigger radius than the default one.
+                      It may not work well with a lot of balls or with a bigger radius than the default one.
   -h                  Print help.
 ```
 
