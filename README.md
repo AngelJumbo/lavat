@@ -22,15 +22,18 @@ $ paru -S lavat-git
 ```
 Usage: lavat [OPTIONS]
 OPTIONS:
-  -c COLOR          Set color. Available colours: red, blue, yellow, green, cyan and magenta.
-                    Besides those colors the default one is the normal foreground of your terminal.
-  -s SPEED          Set the speed, from 1 to 5. (default 1)
-  -r RADIUS         Set the radius of the metaballs, from 1 to 10. (default: 5)
-  -R RIM            Set a "rim" for each metaball, sizes from 1 to 5. (default: none)
-                    This option does not work with the default color
-  -b NBALLS         Set the number of metaballs in the simulation, from 2 to 20. (default: 10)
-  -F CHARS          Allows for a custom set of chars to be used
-  -h                Print help.
+  -c <COLOR>          Set color. Available colours: red, blue, yellow, green, cyan and magenta.
+                      Besides those colors the default one is the normal foreground of your terminal.
+  -s <SPEED>          Set the speed, from 1 to 5. (default 1)
+  -r <RADIUS>         Set the radius of the metaballs, from 1 to 10. (default: 5)
+  -R <RIM>            Set a rim for each metaball, sizes from 1 to 5.(default: none)
+                      This option does not work with the default color.
+  -b <NBALLS>         Set the number of metaballs in the simulation, from 2 to 20. (default: 10)
+  -F <CHARS>          Allows for a custom set of chars to be used
+                      Only ascii symbols are supported for now, wide/unicode chars may appear broken.
+  -C                  Retain the entire lava inside the terminal.
+                      It may not work well with a lot of balls or witha bigger radius than the default one.
+  -h                  Print help.
 ```
 
 ## Demo
