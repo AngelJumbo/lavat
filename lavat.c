@@ -30,7 +30,7 @@ int main(int argc, char *argv[]) {
   if (!parse_options(argc, argv))
     return 0;
 
-  if (color == TB_DEFAULT)
+  if (color == TB_DEFAULT && !custom)
     rim = 0;
 
   time_t t;
@@ -247,8 +247,10 @@ void print_help() {
       "  -F <CHARS>          Allows for a custom set of chars to be used\n"
       "                      Only ascii symbols are supported for now, "
       "wide/unicode chars may appear broken.\n"
-      "  -C                  Retain the entire lava inside the terminal(It may not "
-      "work well with a lot of balls or with a bigger radius than the default one).\n"
+      "  -C                  Retain the entire lava inside the terminal(It may "
+      "not "
+      "work well with a lot of balls or with a bigger radius than the default "
+      "one).\n"
       "  -h                  Print help.\n"
       "(Tip: Zoom out in your terminal before running the program to get a "
       "better resolution of the lava).\n");
