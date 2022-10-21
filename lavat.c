@@ -49,7 +49,7 @@ int main(int argc, char *argv[]) {
   int speed = (((1 / (float)(maxX + maxY)) * 5000000) + 50000) / speedMult;
   radius = (radius * radius + (float)(maxX * maxY)) / 15000;
 
-  int margin = contained ? radius * 6 : 0;
+  int margin = contained ? radius * 10 : 0;
 
   float sumConst = 0.0225;
   float sumConst2 = sumConst * (1 + (float)(0.25 * rim));
@@ -247,7 +247,10 @@ void print_help() {
       "  -F <CHARS>          Allows for a custom set of chars to be used\n"
       "                      Only ascii symbols are supported for now, "
       "wide/unicode chars may appear broken.\n"
-      "  -C                  Make metaballs bounce right off the edge of the "
-      "terminal.\n"
-      "  -h                  Print help.\n");
+      "  -C                  Retain the metaballs in the terminal(It may not "
+      "work well with a lot of balls or with bigger radius than the default "
+      "values).\n"
+      "  -h                  Print help.\n"
+      "(Tip: Zoom out in your terminal before running the program to get a "
+      "better resolution of the lava).\n");
 }
