@@ -1,7 +1,7 @@
 # lavat
 
 Little program that simulates a lava lamp in the terminal.
-![demo](https://github.com/AngelJumbo/lavat/blob/demo/demo/3.gif?raw=true)
+![demo](https://github.com/AngelJumbo/demos/blob/main/lavat/3.gif?raw=true)
 ## Installation
 
 Requirements: A Unix-like system, a C compiler and make.
@@ -40,23 +40,22 @@ OPTIONS:
 
 `lavat -c red -R 1`
 
-![demo 1](https://github.com/AngelJumbo/lavat/blob/demo/demo/1.gif?raw=true)
+![demo 1](https://github.com/AngelJumbo/demos/blob/main/lavat/1.gif?raw=true)
 
 
 `lavat -c cyan -R 4 -b 20 -r 2`
 
-![demo 2](https://github.com/AngelJumbo/lavat/blob/demo/demo/2.gif?raw=true)
+![demo 2](https://github.com/AngelJumbo/demos/blob/main/lavat/2.gif?raw=true)
 
 If you send more than one character to the -F option you can have 3d-ish effect.
 
 `lavat -c blue -R2 -F @@:::::: -r10`
 
-![demo 2](https://github.com/AngelJumbo/lavat/blob/demo/demo/4.gif?raw=true)
+![demo 2](https://github.com/AngelJumbo/demos/blob/main/lavat/4.gif?raw=true)
 
 (The colors depend on your color scheme.)
 
 ## Credits
 
   - This program is made with [Termbox2](https://github.com/termbox/termbox2).
-  - [Metaballs](https://en.wikipedia.org/wiki/Metaballs).
   - [Lava lamp in JavaScript](https://codeguppy.com/site/tutorials/lava-lamp.html)
