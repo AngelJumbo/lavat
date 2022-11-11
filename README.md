@@ -54,6 +54,12 @@ If you send more than one character to the -F option you can have 3d-ish effect.
 
 ![demo 2](https://github.com/AngelJumbo/demos/blob/main/lavat/4.gif?raw=true)
 
+For the Alacritty and Kitty users I know that the -R option haven't been working, but now you can set the color of the rim independently. Try:
+
+`lavat -c yellow -R1 -k red`
+
+![demo 2](https://github.com/AngelJumbo/demos/blob/main/lavat/5.gif?raw=true)
+
 (The colors depend on your color scheme.)
 
 ## Credits
