@@ -16,7 +16,7 @@ typedef struct {
 
 static char *custom = NULL;
 static short color = TB_DEFAULT;
-static short color2 = TB_BOLD;
+static short color2 = TB_DEFAULT;
 static int nballs = 10;
 static short speedMult = 1;
 static short rim = 0;
@@ -57,8 +57,8 @@ int main(int argc, char *argv[]) {
 
   char *custom2 = custom;
 
-  if (color2 == TB_BOLD)
-    color2 = color | color2;
+  if (color2 == TB_DEFAULT || !rim)
+    color2 = color | TB_BOLD;
 
   if (custom && strlen(custom) > 1 && rim) {
     custom2 = custom + 1;
