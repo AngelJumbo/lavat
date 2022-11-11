@@ -27,8 +27,8 @@ OPTIONS:
   -s <SPEED>          Set the speed, from 1 to 5. (default 1)
   -r <RADIUS>         Set the radius of the metaballs, from 1 to 10. (default: 5)
   -R <RIM>            Set a rim for each metaball, sizes from 1 to 5.(default: none)
-  -k <COLOR>          Set the color of the rim if there is one. Available colours: red, blue, yellow, green, cyan and magenta.
                       This option does not work with the default color.
+  -k <COLOR>          Set the color of the rim if there is one. Available colours: red, blue, yellow, green, cyan and magenta.
   -b <NBALLS>         Set the number of metaballs in the simulation, from 2 to 20. (default: 10)
   -F <CHARS>          Allows for a custom set of chars to be used
                       Only ascii symbols are supported for now, wide/unicode characters may appear broken.
