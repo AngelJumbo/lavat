@@ -16,6 +16,7 @@ typedef struct {
 
 static char *custom = NULL;
 static short color = TB_DEFAULT;
+static short color2 = TB_BOLD;
 static int nballs = 10;
 static short speedMult = 1;
 static short rim = 0;
@@ -55,6 +56,9 @@ int main(int argc, char *argv[]) {
   float sumConst2 = sumConst * (1 + (float)(0.25 * rim));
 
   char *custom2 = custom;
+
+  if (color2 == TB_BOLD)
+    color2 = color | color2;
 
   if (custom && strlen(custom) > 1 && rim) {
     custom2 = custom + 1;
@@ -103,12 +107,12 @@ int main(int argc, char *argv[]) {
         if (!custom) {
           if (sum[0] > sumConst) {
             if (sum[1] > sumConst) {
-              tb_printf(i, j, color | TB_BOLD, 0, "█");
+              tb_printf(i, j, color2, 0, "█");
             } else {
-              tb_printf(i, j, color | TB_BOLD, 0, "▀");
+              tb_printf(i, j, color2, 0, "▀");
             }
           } else if (sum[1] > sumConst) {
-            tb_printf(i, j, color | TB_BOLD, 0, "▄");
+            tb_printf(i, j, color2, 0, "▄");
           }
 
           if (rim) {
@@ -116,15 +120,15 @@ int main(int argc, char *argv[]) {
               if (sum[1] > sumConst2) {
                 tb_printf(i, j, color, 0, "█");
               } else {
-                tb_printf(i, j, color | TB_BOLD, color, "▄");
+                tb_printf(i, j, color2, color, "▄");
               }
             } else if (sum[1] > sumConst2) {
-              tb_printf(i, j, color | TB_BOLD, color, "▀");
+              tb_printf(i, j, color2, color, "▀");
             }
           }
         } else {
           if (sum[0] > sumConst) {
-            tb_printf(i, j, color | TB_BOLD, 0, custom2);
+            tb_printf(i, j, color2, 0, custom2);
           }
 
           if (rim) {
@@ -150,29 +154,40 @@ int main(int argc, char *argv[]) {
   free(balls);
 }
 
+int set_color(short *var, char *optarg) {
+
+  if (strcmp(optarg, "red") == 0) {
+    *var = TB_RED;
+  } else if (strcmp(optarg, "yellow") == 0) {
+    *var = TB_YELLOW;
+  } else if (strcmp(optarg, "blue") == 0) {
+    *var = TB_BLUE;
+  } else if (strcmp(optarg, "green") == 0) {
+    *var = TB_GREEN;
+  } else if (strcmp(optarg, "magenta") == 0) {
+    *var = TB_MAGENTA;
+  } else if (strcmp(optarg, "cyan") == 0) {
+    *var = TB_CYAN;
+  } else {
+    printf("Unknown color: %s\n", optarg);
+    return 0;
+  }
+  return 1;
+}
+
 int parse_options(int argc, char *argv[]) {
   if (argc == 1)
     return 1;
   int c;
-  while ((c = getopt(argc, argv, ":c:s:r:R:b:F:Ch")) != -1) {
+  while ((c = getopt(argc, argv, ":c:k:s:r:R:b:F:Ch")) != -1) {
     switch (c) {
     case 'c':
-      if (strcmp(optarg, "red") == 0) {
-        color = TB_RED;
-      } else if (strcmp(optarg, "yellow") == 0) {
-        color = TB_YELLOW;
-      } else if (strcmp(optarg, "blue") == 0) {
-        color = TB_BLUE;
-      } else if (strcmp(optarg, "green") == 0) {
-        color = TB_GREEN;
-      } else if (strcmp(optarg, "magenta") == 0) {
-        color = TB_MAGENTA;
-      } else if (strcmp(optarg, "cyan") == 0) {
-        color = TB_CYAN;
-      } else {
-        printf("Unknown color\n");
+      if (!set_color(&color, optarg))
         return 0;
-      }
+      break;
+    case 'k':
+      if (!set_color(&color2, optarg))
+        return 0;
       break;
     case 's':
       speedMult = atoi(optarg);
@@ -240,6 +255,8 @@ void print_help() {
       "(default: 5)\n"
       "  -R <RIM>            Set a rim for each metaball, sizes from 1 to 5."
       "(default: none)\n"
+      "  -k <COLOR>          Set the color of the rim if there is one."
+      " Available colours: red, blue, yellow, green, cyan and magenta. \n"
       "                      This option does not work with the default "
       "color.\n"
       "  -b <NBALLS>         Set the number of metaballs in the simulation, "
