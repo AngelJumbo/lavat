@@ -24,7 +24,7 @@ Usage: lavat [OPTIONS]
 OPTIONS:
   -c <COLOR>          Set color. Available colours: red, blue, yellow, green, cyan and magenta.
                       Besides those colors the default one is the normal foreground of your terminal.
-  -s <SPEED>          Set the speed, from 1 to 5. (default 1)
+  -s <SPEED>          Set the speed, from 1 to 10. (default 5)
   -r <RADIUS>         Set the radius of the metaballs, from 1 to 10. (default: 5)
   -R <RIM>            Set a rim for each metaball, sizes from 1 to 5.(default: none)
                       This option does not work with the default color.

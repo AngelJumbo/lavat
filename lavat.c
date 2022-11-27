@@ -18,7 +18,7 @@ static char *custom = NULL;
 static short color = TB_DEFAULT;
 static short color2 = TB_DEFAULT;
 static int nballs = 10;
-static short speedMult = 1;
+static short speedMult = 5;
 static short rim = 0;
 static short contained = 0;
 static float radius = 100;
@@ -47,7 +47,8 @@ int main(int argc, char *argv[]) {
 
   int maxX = tb_width();
   int maxY = tb_height() * 2;
-  int speed = (((1 / (float)(maxX + maxY)) * 5000000) + 50000) / speedMult;
+  speedMult = 11 - speedMult;
+  int speed = (((1 / (float)(maxX + maxY)) * 1000000) + 10000) * speedMult;
   radius = (radius * radius + (float)(maxX * maxY)) / 15000;
 
   int margin = contained ? radius * 10 : 0;
@@ -191,8 +192,8 @@ int parse_options(int argc, char *argv[]) {
       break;
     case 's':
       speedMult = atoi(optarg);
-      if (speedMult > 5 || speedMult <= 0) {
-        printf("Invalid speed, only values between 1 and 5 are allowed\n");
+      if (speedMult > 10 || speedMult <= 0) {
+        printf("Invalid speed, only values between 1 and 10 are allowed\n");
         return 0;
       }
       break;
@@ -250,7 +251,7 @@ void print_help() {
       "green, cyan and magenta. \n"
       "                      Besides those colors the default one is the normal"
       " foreground of your terminal.\n"
-      "  -s <SPEED>          Set the speed, from 1 to 5. (default 1)\n"
+      "  -s <SPEED>          Set the speed, from 1 to 10. (default 5)\n"
       "  -r <RADIUS>         Set the radius of the metaballs, from 1 to 10. "
       "(default: 5)\n"
       "  -R <RIM>            Set a rim for each metaball, sizes from 1 to 5."
