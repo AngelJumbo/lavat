@@ -145,6 +145,22 @@ int main(int argc, char *argv[]) {
     tb_clear();
 
     tb_peek_event(&event, 10);
+    switch (event.ch) {
+    case '-':
+    case '_':
+      if (speedMult < 10) {
+        speedMult++;
+        speed = (((1 / (float)(maxX + maxY)) * 1000000) + 10000) * speedMult;
+      }
+      break;
+    case '+':
+    case '=':
+      if (speedMult > 1) {
+        speedMult--;
+        speed = (((1 / (float)(maxX + maxY)) * 1000000) + 10000) * speedMult;
+      }
+      break;
+    }
     if (event.key == TB_KEY_CTRL_C || event.key == TB_KEY_ESC ||
         event.ch == 'q' || event.ch == 'Q')
       break;
@@ -252,6 +268,8 @@ void print_help() {
       "                      Besides those colors the default one is the normal"
       " foreground of your terminal.\n"
       "  -s <SPEED>          Set the speed, from 1 to 10. (default 5)\n"
+      "                      Change the speed while the program runs "
+      "with the - and + keys.\n"
       "  -r <RADIUS>         Set the radius of the metaballs, from 1 to 10. "
       "(default: 5)\n"
       "  -R <RIM>            Set a rim for each metaball, sizes from 1 to 5."
