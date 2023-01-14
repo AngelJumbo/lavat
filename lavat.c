@@ -185,7 +185,6 @@ void event_handler(){
       }
       break;
     case 'i':
-    case 'I':
       if(radiusIn+10<=150){
         radiusIn+=10;
         radius = (radiusIn * radiusIn + (float)(maxX * maxY)) / 15000;
@@ -193,13 +192,31 @@ void event_handler(){
       }
       break;
     case 'd':
-    case 'D':
       if(radiusIn-10>=50){
         radiusIn-=10;
         radius = (radiusIn * radiusIn + (float)(maxX * maxY)) / 15000;
         margin = contained ? radius * 10 : 0;
       }
       break;
+    case 'I':
+
+      if (color != TB_DEFAULT || custom)
+        if(rim+1<=5){
+            rim++;
+            sumConst2 = sumConst * (1 + (float)(0.25 * rim));
+
+          }
+      break;
+    case 'D':
+
+      if (color != TB_DEFAULT || custom)
+        if(rim-1>=0){
+            rim--;
+            sumConst2 = sumConst * (1 + (float)(0.25 * rim));
+
+          }
+      break;
+
     case 'q':
     case 'Q':
       tb_shutdown();
@@ -350,6 +367,8 @@ void print_help() {
 
       "                      If you use Kitty or Alacritty you must use it "
       "with the -k option to see the rim.\n"
+      "                      Increase and decrease the rim in runtime with "
+      "shift+i and shift+d."
       "  -k <COLOR>          Set the color of the rim if there is one."
       " Available colours: red, blue, yellow, green, cyan and magenta. \n"
       "  -b <NBALLS>         Set the number of metaballs in the simulation, "
