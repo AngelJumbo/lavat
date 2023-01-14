@@ -30,7 +30,7 @@ static float radius;
 static int margin;
 static float sumConst;
 static float sumConst2;
-static int maxX,maxY;
+static int maxX, maxY;
 static int speed;
 static Ball balls[MAX_NBALLS] = {0};
 static struct tb_event event = {0};
@@ -49,8 +49,7 @@ int main(int argc, char *argv[]) {
     rim = 0;
 
   time_t t;
-  //Ball *balls = malloc(sizeof(Ball) * nballs);
-
+  // Ball *balls = malloc(sizeof(Ball) * nballs);
 
   srand((unsigned)time(&t));
 
@@ -135,28 +134,27 @@ int main(int argc, char *argv[]) {
     tb_peek_event(&event, 10);
 
     event_handler();
-
   }
 
   tb_shutdown();
 
-  //free(balls);
+  // free(balls);
 }
 
-void event_handler(){
-  if (event.type == TB_EVENT_RESIZE){
+void event_handler() {
+  if (event.type == TB_EVENT_RESIZE) {
     do
       tb_peek_event(&event, 10);
-    while(event.type == TB_EVENT_RESIZE);
-    
+    while (event.type == TB_EVENT_RESIZE);
+
     init_params();
-  }else if(event.type == TB_EVENT_KEY){
-    
-    if (event.key == TB_KEY_CTRL_C || event.key == TB_KEY_ESC){
+  } else if (event.type == TB_EVENT_KEY) {
+
+    if (event.key == TB_KEY_CTRL_C || event.key == TB_KEY_ESC) {
       tb_shutdown();
       exit(0);
     }
-      
+
     switch (event.ch) {
     case '-':
     case '_':
@@ -174,26 +172,26 @@ void event_handler(){
       break;
     case 'm':
     case 'M':
-      if(nballs+1<=MAX_NBALLS){
+      if (nballs + 1 <= MAX_NBALLS) {
         nballs++;
       }
       break;
     case 'l':
     case 'L':
-      if(nballs-1>=MIN_NBALLS){
+      if (nballs - 1 >= MIN_NBALLS) {
         nballs--;
       }
       break;
     case 'i':
-      if(radiusIn+10<=150){
-        radiusIn+=10;
+      if (radiusIn + 10 <= 150) {
+        radiusIn += 10;
         radius = (radiusIn * radiusIn + (float)(maxX * maxY)) / 15000;
         margin = contained ? radius * 10 : 0;
       }
       break;
     case 'd':
-      if(radiusIn-10>=50){
-        radiusIn-=10;
+      if (radiusIn - 10 >= 50) {
+        radiusIn -= 10;
         radius = (radiusIn * radiusIn + (float)(maxX * maxY)) / 15000;
         margin = contained ? radius * 10 : 0;
       }
@@ -201,20 +199,18 @@ void event_handler(){
     case 'I':
 
       if (color != TB_DEFAULT || custom)
-        if(rim+1<=5){
-            rim++;
-            sumConst2 = sumConst * (1 + (float)(0.25 * rim));
-
-          }
+        if (rim + 1 <= 5) {
+          rim++;
+          sumConst2 = sumConst * (1 + (float)(0.25 * rim));
+        }
       break;
     case 'D':
 
       if (color != TB_DEFAULT || custom)
-        if(rim-1>=0){
-            rim--;
-            sumConst2 = sumConst * (1 + (float)(0.25 * rim));
-
-          }
+        if (rim - 1 >= 0) {
+          rim--;
+          sumConst2 = sumConst * (1 + (float)(0.25 * rim));
+        }
       break;
 
     case 'q':
@@ -226,8 +222,7 @@ void event_handler(){
   }
 }
 
-
-void init_params(){
+void init_params() {
 
   maxX = tb_width();
   maxY = tb_height() * 2;
@@ -319,7 +314,8 @@ int parse_options(int argc, char *argv[]) {
       if (nballs > MAX_NBALLS || nballs < MIN_NBALLS) {
 
         printf("Invalid number of metaballs, only values between %i and %i are"
-               "allowed\n", MIN_NBALLS,MAX_NBALLS);
+               "allowed\n",
+               MIN_NBALLS, MAX_NBALLS);
         return 0;
       }
       break;
@@ -354,21 +350,14 @@ void print_help() {
       "                      Besides those colors the default one is the normal"
       " foreground of your terminal.\n"
       "  -s <SPEED>          Set the speed, from 1 to 10. (default 5)\n"
-      "                      Change the speed while the program runs "
-      "with the - and + keys.\n"
       "  -r <RADIUS>         Set the radius of the metaballs, from 1 to 10. "
       "(default: 5)\n"
-      "                      Increase and decrease the radius in runtime with"
-      "the i and d keys.\n"
       "  -R <RIM>            Set a rim for each metaball, sizes from 1 to 5."
       "(default: none)\n"
       "                      This option does not work with the default "
       "color\n"
-
       "                      If you use Kitty or Alacritty you must use it "
       "with the -k option to see the rim.\n"
-      "                      Increase and decrease the rim in runtime with "
-      "shift+i and shift+d."
       "  -k <COLOR>          Set the color of the rim if there is one."
       " Available colours: red, blue, yellow, green, cyan and magenta. \n"
       "  -b <NBALLS>         Set the number of metaballs in the simulation, "
@@ -383,6 +372,16 @@ void print_help() {
       "                      It may not work well with a lot of balls or with"
       " a bigger radius than the default one.\n"
       "  -h                  Print help.\n"
+      "RUNTIME CONTROLS:\n"
+      "  i                   Icrease radius of the metaballs.\n"
+      "  d                   Decrease radius of the metaballs.\n"
+      "  shift i             Icrease rim of the metaballs.\n"
+      "  shift d             Decrease rim of the metaballs.\n"
+      "  m                   Icrease the number of metaballs.\n"
+      "  l                   Decrease the number metaballs.\n"
+      "  +                   Icrease speed.\n"
+      "  -                   Decrease speed.\n"
       "(Tip: Zoom out in your terminal before running the program to get a "
-      "better resolution of the lava).\n",MIN_NBALLS,MAX_NBALLS);
+      "better resolution of the lava).\n",
+      MIN_NBALLS, MAX_NBALLS);
 }

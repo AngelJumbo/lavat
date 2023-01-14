@@ -27,14 +27,25 @@ OPTIONS:
   -s <SPEED>          Set the speed, from 1 to 10. (default 5)
   -r <RADIUS>         Set the radius of the metaballs, from 1 to 10. (default: 5)
   -R <RIM>            Set a rim for each metaball, sizes from 1 to 5.(default: none)
-                      This option does not work with the default color.
+                      This option does not work with the default color
+                      If you use Kitty or Alacritty you must use it with the -k option to see the rim.
   -k <COLOR>          Set the color of the rim if there is one. Available colours: red, blue, yellow, green, cyan and magenta.
-  -b <NBALLS>         Set the number of metaballs in the simulation, from 2 to 20. (default: 10)
+  -b <NBALLS>         Set the number of metaballs in the simulation, from 5 to 20. (default: 10)
+                      Increase or decrease the number of balls in runtime with the m and l keys.
   -F <CHARS>          Allows for a custom set of chars to be used
-                      Only ascii symbols are supported for now, wide/unicode characters may appear broken.
+                      Only ascii symbols are supported for now, wide/unicode chars may appear broken.
   -C                  Retain the entire lava inside the terminal.
                       It may not work well with a lot of balls or with a bigger radius than the default one.
   -h                  Print help.
+RUNTIME CONTROLS:
+  i                   Icrease radius of the metaballs.
+  d                   Decrease radius of the metaballs.
+  shift i             Icrease rim of the metaballs.
+  shift d             Decrease rim of the metaballs.
+  m                   Icrease the number of metaballs.
+  l                   Decrease the number metaballs.
+  +                   Icrease speed.
+  -                   Decrease speed.
 ```
 
 ## Demo
