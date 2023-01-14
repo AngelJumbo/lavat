@@ -136,9 +136,6 @@ int main(int argc, char *argv[]) {
 
     event_handler();
 
-    if (event.key == TB_KEY_CTRL_C || event.key == TB_KEY_ESC ||
-        event.ch == 'q' || event.ch == 'Q')
-      break;
   }
 
   tb_shutdown();
@@ -154,6 +151,12 @@ void event_handler(){
     
     init_params();
   }else if(event.type == TB_EVENT_KEY){
+    
+    if (event.key == TB_KEY_CTRL_C || event.key == TB_KEY_ESC){
+      tb_shutdown();
+      exit(0);
+    }
+      
     switch (event.ch) {
     case '-':
     case '_':
@@ -180,6 +183,27 @@ void event_handler(){
       if(nballs-1>=MIN_NBALLS){
         nballs--;
       }
+      break;
+    case 'i':
+    case 'I':
+      if(radiusIn+10<=150){
+        radiusIn+=10;
+        radius = (radiusIn * radiusIn + (float)(maxX * maxY)) / 15000;
+        margin = contained ? radius * 10 : 0;
+      }
+      break;
+    case 'd':
+    case 'D':
+      if(radiusIn-10>=50){
+        radiusIn-=10;
+        radius = (radiusIn * radiusIn + (float)(maxX * maxY)) / 15000;
+        margin = contained ? radius * 10 : 0;
+      }
+      break;
+    case 'q':
+    case 'Q':
+      tb_shutdown();
+      exit(0);
       break;
     }
   }
@@ -317,6 +341,8 @@ void print_help() {
       "with the - and + keys.\n"
       "  -r <RADIUS>         Set the radius of the metaballs, from 1 to 10. "
       "(default: 5)\n"
+      "                      Increase and decrease the radius in runtime with"
+      "the i and d keys.\n"
       "  -R <RIM>            Set a rim for each metaball, sizes from 1 to 5."
       "(default: none)\n"
       "                      This option does not work with the default "
