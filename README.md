@@ -31,7 +31,6 @@ OPTIONS:
                       If you use Kitty or Alacritty you must use it with the -k option to see the rim.
   -k <COLOR>          Set the color of the rim if there is one. Available colours: red, blue, yellow, green, cyan and magenta.
   -b <NBALLS>         Set the number of metaballs in the simulation, from 5 to 20. (default: 10)
-                      Increase or decrease the number of balls in runtime with the m and l keys.
   -F <CHARS>          Allows for a custom set of chars to be used
                       Only ascii symbols are supported for now, wide/unicode chars may appear broken.
   -C                  Retain the entire lava inside the terminal.
