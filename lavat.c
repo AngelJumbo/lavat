@@ -18,17 +18,25 @@ typedef struct {
 } Ball;
 
 static char *custom = NULL;
+static char *custom2 = NULL;
 static short color = TB_DEFAULT;
 static short color2 = TB_DEFAULT;
 static int nballs = 10;
 static short speedMult = 5;
 static short rim = 0;
 static short contained = 0;
-static float radius = 100;
+static float radiusIn = 100;
+static float radius;
+static int margin;
+static float sumConst;
+static float sumConst2;
 static int maxX,maxY;
 static int speed;
+static Ball balls[MAX_NBALLS] = {0};
+static struct tb_event event = {0};
 
-void event_handler(struct tb_event event);
+void init_params();
+void event_handler();
 int parse_options(int argc, char *argv[]);
 void print_help();
 
@@ -42,9 +50,7 @@ int main(int argc, char *argv[]) {
 
   time_t t;
   //Ball *balls = malloc(sizeof(Ball) * nballs);
-  Ball balls[MAX_NBALLS] = {0};
 
-  struct tb_event event = {0};
 
   srand((unsigned)time(&t));
 
@@ -52,32 +58,7 @@ int main(int argc, char *argv[]) {
 
   tb_hide_cursor();
 
-  maxX = tb_width();
-  maxY = tb_height() * 2;
-  speedMult = 11 - speedMult;
-  speed = (((1 / (float)(maxX + maxY)) * 1000000) + 10000) * speedMult;
-  radius = (radius * radius + (float)(maxX * maxY)) / 15000;
-
-  int margin = contained ? radius * 10 : 0;
-
-  float sumConst = 0.0225;
-  float sumConst2 = sumConst * (1 + (float)(0.25 * rim));
-
-  char *custom2 = custom;
-
-  if (color2 == TB_DEFAULT || !rim)
-    color2 = color | TB_BOLD;
-
-  if (custom && strlen(custom) > 1 && rim) {
-    custom2 = custom + 1;
-  }
-
-  for (int i = 0; i < MAX_NBALLS; i++) {
-    balls[i].x = rand() % (maxX - 2 * margin) + margin;
-    balls[i].y = rand() % (maxY - 2 * margin) + margin;
-    balls[i].dx = (rand() % 2 == 0) ? -1 : 1;
-    balls[i].dy = (rand() % 2 == 0) ? -1 : 1;
-  }
+  init_params();
 
   while (1) {
 
@@ -153,7 +134,7 @@ int main(int argc, char *argv[]) {
 
     tb_peek_event(&event, 10);
 
-    event_handler(event);
+    event_handler();
 
     if (event.key == TB_KEY_CTRL_C || event.key == TB_KEY_ESC ||
         event.ch == 'q' || event.ch == 'Q')
@@ -165,7 +146,14 @@ int main(int argc, char *argv[]) {
   //free(balls);
 }
 
-void event_handler(struct tb_event event){
+void event_handler(){
+  if (event.type == TB_EVENT_RESIZE){
+    do
+      tb_peek_event(&event, 10);
+    while(event.type == TB_EVENT_RESIZE);
+    
+    init_params();
+  }else if(event.type == TB_EVENT_KEY){
     switch (event.ch) {
     case '-':
     case '_':
@@ -194,10 +182,39 @@ void event_handler(struct tb_event event){
       }
       break;
     }
-
+  }
 }
 
 
+void init_params(){
+
+  maxX = tb_width();
+  maxY = tb_height() * 2;
+  speedMult = 11 - speedMult;
+  speed = (((1 / (float)(maxX + maxY)) * 1000000) + 10000) * speedMult;
+  radius = (radiusIn * radiusIn + (float)(maxX * maxY)) / 15000;
+
+  margin = contained ? radius * 10 : 0;
+
+  sumConst = 0.0225;
+  sumConst2 = sumConst * (1 + (float)(0.25 * rim));
+
+  custom2 = custom;
+
+  if (color2 == TB_DEFAULT || !rim)
+    color2 = color | TB_BOLD;
+
+  if (custom && strlen(custom) > 1 && rim) {
+    custom2 = custom + 1;
+  }
+
+  for (int i = 0; i < MAX_NBALLS; i++) {
+    balls[i].x = rand() % (maxX - 2 * margin) + margin;
+    balls[i].y = rand() % (maxY - 2 * margin) + margin;
+    balls[i].dx = (rand() % 2 == 0) ? -1 : 1;
+    balls[i].dy = (rand() % 2 == 0) ? -1 : 1;
+  }
+}
 
 int set_color(short *var, char *optarg) {
 
@@ -249,8 +266,8 @@ int parse_options(int argc, char *argv[]) {
       }
       break;
     case 'r':
-      radius = 50 + atoi(optarg) * 10;
-      if (radius > 150 || radius < 50) {
+      radiusIn = 50 + atoi(optarg) * 10;
+      if (radiusIn > 150 || radiusIn < 50) {
         printf("Invalid radius, only values between 1 and 10 are allowed\n");
         return 0;
       }
