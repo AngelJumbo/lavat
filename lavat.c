@@ -7,6 +7,9 @@
 #include <time.h>
 #include <unistd.h>
 
+#define MIN_NBALLS 5
+#define MAX_NBALLS 20
+
 typedef struct {
   int x;
   int y;
@@ -22,7 +25,10 @@ static short speedMult = 5;
 static short rim = 0;
 static short contained = 0;
 static float radius = 100;
+static int maxX,maxY;
+static int speed;
 
+void event_handler(struct tb_event event);
 int parse_options(int argc, char *argv[]);
 void print_help();
 
@@ -35,7 +41,8 @@ int main(int argc, char *argv[]) {
     rim = 0;
 
   time_t t;
-  Ball *balls = malloc(sizeof(Ball) * nballs);
+  //Ball *balls = malloc(sizeof(Ball) * nballs);
+  Ball balls[MAX_NBALLS] = {0};
 
   struct tb_event event = {0};
 
@@ -45,10 +52,10 @@ int main(int argc, char *argv[]) {
 
   tb_hide_cursor();
 
-  int maxX = tb_width();
-  int maxY = tb_height() * 2;
+  maxX = tb_width();
+  maxY = tb_height() * 2;
   speedMult = 11 - speedMult;
-  int speed = (((1 / (float)(maxX + maxY)) * 1000000) + 10000) * speedMult;
+  speed = (((1 / (float)(maxX + maxY)) * 1000000) + 10000) * speedMult;
   radius = (radius * radius + (float)(maxX * maxY)) / 15000;
 
   int margin = contained ? radius * 10 : 0;
@@ -65,7 +72,7 @@ int main(int argc, char *argv[]) {
     custom2 = custom + 1;
   }
 
-  for (int i = 0; i < nballs; i++) {
+  for (int i = 0; i < MAX_NBALLS; i++) {
     balls[i].x = rand() % (maxX - 2 * margin) + margin;
     balls[i].y = rand() % (maxY - 2 * margin) + margin;
     balls[i].dx = (rand() % 2 == 0) ? -1 : 1;
@@ -145,6 +152,20 @@ int main(int argc, char *argv[]) {
     tb_clear();
 
     tb_peek_event(&event, 10);
+
+    event_handler(event);
+
+    if (event.key == TB_KEY_CTRL_C || event.key == TB_KEY_ESC ||
+        event.ch == 'q' || event.ch == 'Q')
+      break;
+  }
+
+  tb_shutdown();
+
+  //free(balls);
+}
+
+void event_handler(struct tb_event event){
     switch (event.ch) {
     case '-':
     case '_':
@@ -160,16 +181,23 @@ int main(int argc, char *argv[]) {
         speed = (((1 / (float)(maxX + maxY)) * 1000000) + 10000) * speedMult;
       }
       break;
-    }
-    if (event.key == TB_KEY_CTRL_C || event.key == TB_KEY_ESC ||
-        event.ch == 'q' || event.ch == 'Q')
+    case 'm':
+    case 'M':
+      if(nballs+1<=MAX_NBALLS){
+        nballs++;
+      }
       break;
-  }
+    case 'l':
+    case 'L':
+      if(nballs-1>=MIN_NBALLS){
+        nballs--;
+      }
+      break;
+    }
 
-  tb_shutdown();
-
-  free(balls);
 }
+
+
 
 int set_color(short *var, char *optarg) {
 
@@ -230,10 +258,10 @@ int parse_options(int argc, char *argv[]) {
 
     case 'b':
       nballs = atoi(optarg);
-      if (nballs > 20 || nballs < 2) {
+      if (nballs > MAX_NBALLS || nballs < MIN_NBALLS) {
 
-        printf("Invalid number of metaballs, only values between 2 and 20 are"
-               "allowed\n");
+        printf("Invalid number of metaballs, only values between %i and %i are"
+               "allowed\n", MIN_NBALLS,MAX_NBALLS);
         return 0;
       }
       break;
@@ -282,7 +310,10 @@ void print_help() {
       "  -k <COLOR>          Set the color of the rim if there is one."
       " Available colours: red, blue, yellow, green, cyan and magenta. \n"
       "  -b <NBALLS>         Set the number of metaballs in the simulation, "
-      "from 2 to 20. (default: 10)\n"
+      "from %i to %i. (default: 10)\n"
+      "                      Increase or decrease the number of balls in run"
+
+      "time with the m and l keys.\n"
       "  -F <CHARS>          Allows for a custom set of chars to be used\n"
       "                      Only ascii symbols are supported for now, "
       "wide/unicode chars may appear broken.\n"
@@ -291,5 +322,5 @@ void print_help() {
       " a bigger radius than the default one.\n"
       "  -h                  Print help.\n"
       "(Tip: Zoom out in your terminal before running the program to get a "
-      "better resolution of the lava).\n");
+      "better resolution of the lava).\n",MIN_NBALLS,MAX_NBALLS);
 }
