@@ -11,6 +11,6 @@ clean:
 install: lavat
 	install 				-D lavat 		$(DESTDIR)$(PREFIX)/bin/lavat
 
-.PHONY: unistall
-unistall:
+.PHONY: uninstall
+uninstall:
 	$(RM) $(DESTDIR)$(PREFIX)/bin/lavat
