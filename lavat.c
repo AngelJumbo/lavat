@@ -19,11 +19,12 @@ typedef struct {
 
 static char *custom = NULL;
 static char *custom2 = NULL;
-static short color = TB_DEFAULT;
-static short color2 = TB_DEFAULT;
+static short color = TB_WHITE;
+static short color2 = TB_WHITE;
+static short party = 0;
 static int nballs = 10;
 static short speedMult = 5;
-static short rim = 0;
+static short rim = 1;
 static short contained = 0;
 static float radiusIn = 100;
 static float radius;
@@ -34,19 +35,20 @@ static int maxX, maxY;
 static int speed;
 static Ball balls[MAX_NBALLS] = {0};
 static struct tb_event event = {0};
+static short colors[]={TB_WHITE, TB_RED, TB_YELLOW, TB_BLUE, TB_GREEN, TB_MAGENTA, TB_CYAN, TB_BLACK };
 
 void init_params();
 void event_handler();
 int parse_options(int argc, char *argv[]);
 void print_help();
+short next_color(short current);
+void fix_rim_color();
+void set_random_colors(short level);
 
 int main(int argc, char *argv[]) {
 
   if (!parse_options(argc, argv))
     return 0;
-
-  if (color == TB_DEFAULT && !custom)
-    rim = 0;
 
   time_t t;
   // Ball *balls = malloc(sizeof(Ball) * nballs);
@@ -127,6 +129,9 @@ int main(int argc, char *argv[]) {
         }
       }
     }
+    if (party>0){
+      set_random_colors(party);
+    }
     tb_present();
     usleep(speed);
     tb_clear();
@@ -198,7 +203,7 @@ void event_handler() {
       break;
     case 'I':
 
-      if (color != TB_DEFAULT || custom)
+      if (color != TB_WHITE || custom)
         if (rim + 1 <= 5) {
           rim++;
           sumConst2 = sumConst * (1 + (float)(0.25 * rim));
@@ -206,13 +211,23 @@ void event_handler() {
       break;
     case 'D':
 
-      if (color != TB_DEFAULT || custom)
+      if (color != TB_WHITE || custom)
         if (rim - 1 >= 0) {
           rim--;
           sumConst2 = sumConst * (1 + (float)(0.25 * rim));
         }
       break;
-
+    case 'c':
+      color = next_color(color);
+      fix_rim_color();
+      break;
+    case 'k':
+      color2 = next_color(color2);
+      fix_rim_color();
+      break;
+    case 'p':
+      party = (party+1)%4;
+      break;
     case 'q':
     case 'Q':
       tb_shutdown();
@@ -237,7 +252,7 @@ void init_params() {
 
   custom2 = custom;
 
-  if (color2 == TB_DEFAULT || !rim)
+  if (color2 == TB_WHITE || !rim)
     color2 = color | TB_BOLD;
 
   if (custom && strlen(custom) > 1 && rim) {
@@ -250,6 +265,26 @@ void init_params() {
     balls[i].dx = (rand() % 2 == 0) ? -1 : 1;
     balls[i].dy = (rand() % 2 == 0) ? -1 : 1;
   }
+}
+
+short next_color(short current){
+  for(int i = 0; i<8; i++){
+    if((current == colors[i])||(current == (colors[i] | TB_BOLD ))){
+      return colors[(i+1)%8];
+    }
+  }
+}
+
+void fix_rim_color(){
+  if(color2 == color){
+    color2 = color2 | TB_BOLD;
+  }
+}
+
+void set_random_colors( short level){
+  if(level==1 || level==3) color = colors[ rand() % 7];
+  if(level==2 || level==3) color2 = colors[ rand() % 7];
+  fix_rim_color();
 }
 
 int set_color(short *var, char *optarg) {
@@ -266,6 +301,10 @@ int set_color(short *var, char *optarg) {
     *var = TB_MAGENTA;
   } else if (strcmp(optarg, "cyan") == 0) {
     *var = TB_CYAN;
+  } else if (strcmp(optarg, "black") == 0) {
+    *var = TB_BLACK;
+  } else if (strcmp(optarg, "white") == 0) {
+    *var = TB_WHITE;
   } else {
     printf("Unknown color: %s\n", optarg);
     return 0;
@@ -277,7 +316,7 @@ int parse_options(int argc, char *argv[]) {
   if (argc == 1)
     return 1;
   int c;
-  while ((c = getopt(argc, argv, ":c:k:s:r:R:b:F:Ch")) != -1) {
+  while ((c = getopt(argc, argv, ":c:k:s:r:R:b:F:Cp:h")) != -1) {
     switch (c) {
     case 'c':
       if (!set_color(&color, optarg))
@@ -325,11 +364,18 @@ int parse_options(int argc, char *argv[]) {
     case 'C':
       contained = 1;
       break;
+    case 'p':
+      party = atoi(optarg);
+      if (party < 0 || party > 3 ) {
+        printf("Invalid party mode, only values between 1 and 3 are allowed\n");
+        return 0;
+      }
+      break;
     case 'h':
       print_help();
       return 0;
       break;
-    case ':': /* -f or -o without operand */
+    case ':':
       fprintf(stderr, "Option -%c requires an operand\n", optopt);
       return 0;
       break;
@@ -346,9 +392,7 @@ void print_help() {
       "Usage: lavat [OPTIONS]\n"
       "OPTIONS:\n"
       "  -c <COLOR>          Set color. Available colours: red, blue, yellow, "
-      "green, cyan and magenta. \n"
-      "                      Besides those colors the default one is the normal"
-      " foreground of your terminal.\n"
+      "green, cyan, magenta, white and black. \n"
       "  -s <SPEED>          Set the speed, from 1 to 10. (default 5)\n"
       "  -r <RADIUS>         Set the radius of the metaballs, from 1 to 10. "
       "(default: 5)\n"
@@ -359,7 +403,7 @@ void print_help() {
       "                      If you use Kitty or Alacritty you must use it "
       "with the -k option to see the rim.\n"
       "  -k <COLOR>          Set the color of the rim if there is one."
-      " Available colours: red, blue, yellow, green, cyan and magenta. \n"
+      " Available colours: red, blue, yellow, green, cyan, magenta, white and black. \n"
       "  -b <NBALLS>         Set the number of metaballs in the simulation, "
       "from %i to %i. (default: 10)\n"
       "  -F <CHARS>          Allows for a custom set of chars to be used\n"
@@ -368,6 +412,7 @@ void print_help() {
       "  -C                  Retain the entire lava inside the terminal.\n"
       "                      It may not work well with a lot of balls or with"
       " a bigger radius than the default one.\n"
+      "  -p <MODE>           PARTY!! THREE MODES AVAILABLE (p1, p2 and p3).\n"
       "  -h                  Print help.\n"
       "RUNTIME CONTROLS:\n"
       "  i                   Increase radius of the metaballs.\n"
@@ -376,8 +421,12 @@ void print_help() {
       "  shift d             Decrease rim of the metaballs.\n"
       "  m                   Increase the number of metaballs.\n"
       "  l                   Decrease the number metaballs.\n"
+      "  c                   Change the color of the metaballs.\n"
+      "  k                   Change the rim color of the metaballs.\n"
       "  +                   Increase speed.\n"
       "  -                   Decrease speed.\n"
+      "  p                   TURN ON THE PARTY AND CYCLE THROUGH THE PARTY MODES "
+      "(it can also turns off the party).\n"
       "(Tip: Zoom out in your terminal before running the program to get a "
       "better resolution of the lava).\n",
       MIN_NBALLS, MAX_NBALLS);
