@@ -273,6 +273,7 @@ short next_color(short current){
       return colors[(i+1)%8];
     }
   }
+  return colors[0];
 }
 
 void fix_rim_color(){
