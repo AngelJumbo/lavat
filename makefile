@@ -9,8 +9,10 @@ clean:
 
 .PHONY: install
 install: lavat
-	install 				-D lavat 		$(DESTDIR)$(PREFIX)/bin/lavat
+	mkdir -p $(PREFIX)/bin
+	install lavat $(PREFIX)/bin/lavat
 
-.PHONY: unistall
-unistall:
-	$(RM) $(DESTDIR)$(PREFIX)/bin/lavat
+.PHONY: uninstall
+uninstall:
+	$(RM) $(PREFIX)/bin/lavat
+
