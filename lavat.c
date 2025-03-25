@@ -1,4 +1,6 @@
 #define TB_IMPL
+#define TB_LIB_OPTS
+#define TB_OPT_TRUECOLOR
 
 #include "termbox.h"
 #include <stdio.h>
@@ -6,6 +8,7 @@
 #include <string.h>
 #include <time.h>
 #include <unistd.h>
+#include <float.h>
 
 #define MIN_NBALLS 5
 #define MAX_NBALLS 20
@@ -16,6 +19,12 @@ typedef struct {
   int dx;
   int dy;
 } Ball;
+
+uintattr_t pallete[11];
+int baseColor[3];
+int baseColor2[3];
+short gradient1=0;
+short gradient2=0;
 
 static char *custom = NULL;
 static char *custom2 = NULL;
@@ -45,6 +54,10 @@ short next_color(short current);
 void fix_rim_color();
 void set_random_colors(short level);
 
+void set_pallete();
+uintattr_t get_color(float val);
+void set_pallete2();
+
 int main(int argc, char *argv[]) {
 
   if (!parse_options(argc, argv))
@@ -60,6 +73,7 @@ int main(int argc, char *argv[]) {
   tb_hide_cursor();
 
   init_params();
+
 
   while (1) {
 
@@ -88,32 +102,48 @@ int main(int argc, char *argv[]) {
 
           for (int k = 0; k < nballs; k++) {
             int y = j * 2 + j2;
-            sum[j2] += (radius * radius) /
-                       ((float)((i - balls[k].x) * (i - balls[k].x) +
-                                (y - balls[k].y) * (y - balls[k].y)));
+            float dist_squared = (i - balls[k].x) * (i - balls[k].x) + (y - balls[k].y) * (y - balls[k].y);
+            if (dist_squared == 0) {
+              sum[j2] += FLT_MAX; 
+            } else {
+              sum[j2] += (radius * radius) / dist_squared;
+            }
           }
         }
 
         if (!custom) {
-          if (sum[0] > sumConst) {
-            if (sum[1] > sumConst) {
-              tb_printf(i, j, color2, 0, "█");
-            } else {
-              tb_printf(i, j, color2, 0, "▀");
-            }
-          } else if (sum[1] > sumConst) {
-            tb_printf(i, j, color2, 0, "▄");
-          }
-
-          if (rim) {
-            if (sum[0] > sumConst2) {
-              if (sum[1] > sumConst2) {
-                tb_printf(i, j, color, 0, "█");
+          if(gradient1){
+            if (sum[0] > sumConst) {
+              if (sum[1] > sumConst) {
+                tb_printf(i, j, get_color( sum[0]), get_color(sum[1]), "▀");
               } else {
-                tb_printf(i, j, color2, color, "▄");
+                tb_printf(i, j, get_color( sum[0]), TB_TRUECOLOR_DEFAULT, "▀");
               }
-            } else if (sum[1] > sumConst2) {
-              tb_printf(i, j, color2, color, "▀");
+            } else if (sum[1] > sumConst) {
+              tb_printf(i, j,get_color( sum[1]),TB_TRUECOLOR_DEFAULT, "▄");
+            }
+
+          }else{
+            if (sum[0] > sumConst) {
+              if (sum[1] > sumConst) {
+                tb_printf(i, j, color2, 0, "█");
+              } else {
+                tb_printf(i, j, color2, 0, "▀");
+              }
+            } else if (sum[1] > sumConst) {
+              tb_printf(i, j, color2, 0, "▄");
+            }
+
+            if (rim) {
+              if (sum[0] > sumConst2) {
+                if (sum[1] > sumConst2) {
+                  tb_printf(i, j, color, 0, "█");
+                } else {
+                  tb_printf(i, j, color2, color, "▄");
+                }
+              } else if (sum[1] > sumConst2) {
+                tb_printf(i, j, color2, color, "▀");
+              }
             }
           }
         } else {
@@ -203,7 +233,7 @@ void event_handler() {
       break;
     case 'I':
 
-      if (color != TB_WHITE || custom)
+      if (color != TB_WHITE || custom || gradient1)
         if (rim + 1 <= 5) {
           rim++;
           sumConst2 = sumConst * (1 + (float)(0.25 * rim));
@@ -211,7 +241,7 @@ void event_handler() {
       break;
     case 'D':
 
-      if (color != TB_WHITE || custom)
+      if (color != TB_WHITE || custom || gradient1)
         if (rim - 1 >= 0) {
           rim--;
           sumConst2 = sumConst * (1 + (float)(0.25 * rim));
@@ -265,6 +295,12 @@ void init_params() {
     balls[i].dx = (rand() % 2 == 0) ? -1 : 1;
     balls[i].dy = (rand() % 2 == 0) ? -1 : 1;
   }
+  if(gradient1){
+    tb_set_output_mode(TB_OUTPUT_TRUECOLOR);
+    tb_set_clear_attrs(TB_TRUECOLOR_DEFAULT, TB_TRUECOLOR_DEFAULT);
+    if(gradient2) set_pallete2();
+    else set_pallete();
+  }
 }
 
 short next_color(short current){
@@ -317,7 +353,7 @@ int parse_options(int argc, char *argv[]) {
   if (argc == 1)
     return 1;
   int c;
-  while ((c = getopt(argc, argv, ":c:k:s:r:R:b:F:Cp:h")) != -1) {
+  while ((c = getopt(argc, argv, ":c:k:s:r:R:b:F:Cp:hg:G:")) != -1) {
     switch (c) {
     case 'c':
       if (!set_color(&color, optarg))
@@ -376,6 +412,22 @@ int parse_options(int argc, char *argv[]) {
       print_help();
       return 0;
       break;
+    case 'g':
+      if (!tb_has_truecolor()){
+        fprintf(stderr, "The terminal does not have support for truecolor\n");
+        return 0;
+      }
+      sscanf( optarg, "%02x%02x%02x", &baseColor[0], &baseColor[1], &baseColor[2] );
+      gradient1 = 1;
+      break;
+    case 'G':
+      if (!tb_has_truecolor()){
+        fprintf(stderr, "The terminal does not have support for truecolor\n");
+        return 0;
+      }
+      sscanf( optarg, "%02x%02x%02x", &baseColor2[0], &baseColor2[1], &baseColor2[2] );
+      gradient2 = 1;
+      break;
     case ':':
       fprintf(stderr, "Option -%c requires an operand\n", optopt);
       return 0;
@@ -432,3 +484,54 @@ void print_help() {
       "better resolution of the lava).\n",
       MIN_NBALLS, MAX_NBALLS);
 }
+void set_pallete(){
+  int avgColor= (baseColor[0] + baseColor[1] + baseColor[2])/3;
+  int blackfactor[5]; 
+  int whitefactor[5]; 
+  for(int i=1 ;i<6;i++){
+    blackfactor[i-1]=(6-i)*avgColor/5;
+    whitefactor[i-1]=i*(255-avgColor)/5;
+  }
+
+  for(int i=0 ;i<5;i++){
+    int r, g, b;
+    float factor = (1 - ((float)blackfactor[i]/(avgColor)));
+    r = baseColor[0]*factor;
+    g = baseColor[1]*factor;
+    b = baseColor[2]*factor;
+    pallete[i]= (r << 16) | (g << 8) | b;
+    r = baseColor[0] + (255-baseColor[0])*whitefactor[i]/(255-avgColor);
+    g = baseColor[1] + (255-baseColor[1])*whitefactor[i]/(255-avgColor);
+    b = baseColor[2] + (255-baseColor[2])*whitefactor[i]/(255-avgColor);
+    pallete[i+6] = (r << 16) | (g << 8) | b;
+
+  }
+  pallete[5]= (baseColor[0] << 16) | (baseColor[1] << 8) | baseColor[2];
+}
+
+void set_pallete2() {
+  for (int i = 0; i < 11; i++) {
+    float t = (float)i / (11 - 1); 
+    
+    int r = (1 - t) * baseColor[0] + t * baseColor2[0];
+    int g = (1 - t) * baseColor[1] + t * baseColor2[1];
+    int b = (1 - t) * baseColor[2] + t * baseColor2[2];
+
+    pallete[i] = (r << 16) | (g << 8) | b;
+  }
+}
+
+uintattr_t get_color(float val) {
+
+    val = (val - sumConst)/(0.001*(rim+1)); 
+    
+    if (val > 10) {
+        return pallete[10];       
+    } else if (val < 0) {
+        return pallete[0];        
+    }
+
+    return pallete[(int)val];     
+
+}
+
