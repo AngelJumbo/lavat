@@ -35,7 +35,7 @@ static int nballs = 10;
 static short speedMult = 5;
 static short rim = 1;
 static short contained = 0;
-static float radiusIn = 100;
+static float radiusIn = 110;
 static float radius;
 static int margin;
 static float sumConst;
@@ -57,6 +57,41 @@ void set_random_colors(short level);
 void set_pallete();
 uintattr_t get_color(float val);
 void set_pallete2();
+
+int set_color(short *var, int *baseColor, char *optarg, short useGradient) {
+  if (useGradient) {
+    // Parse hex color
+    if (sscanf(optarg, "%02x%02x%02x", &baseColor[0], &baseColor[1], &baseColor[2]) == 3) {
+      return 1;
+    } else {
+      printf("Invalid hex color format. Use format: RRGGBB\n");
+      return 0;
+    }
+  } else {
+    // Parse named color
+    if (strcmp(optarg, "red") == 0) {
+      *var = TB_RED;
+    } else if (strcmp(optarg, "yellow") == 0) {
+      *var = TB_YELLOW;
+    } else if (strcmp(optarg, "blue") == 0) {
+      *var = TB_BLUE;
+    } else if (strcmp(optarg, "green") == 0) {
+      *var = TB_GREEN;
+    } else if (strcmp(optarg, "magenta") == 0) {
+      *var = TB_MAGENTA;
+    } else if (strcmp(optarg, "cyan") == 0) {
+      *var = TB_CYAN;
+    } else if (strcmp(optarg, "black") == 0) {
+      *var = TB_BLACK;
+    } else if (strcmp(optarg, "white") == 0) {
+      *var = TB_WHITE;
+    } else {
+      printf("Unknown color: %s\n", optarg);
+      return 0;
+    }
+    return 1;
+  }
+}
 
 int main(int argc, char *argv[]) {
 
@@ -218,22 +253,22 @@ void event_handler() {
       }
       break;
     case 'i':
-      if (radiusIn + 10 <= 150) {
-        radiusIn += 10;
+      if (radiusIn + 5 <= 150) {
+        radiusIn += 5;
         radius = (radiusIn * radiusIn + (float)(maxX * maxY)) / 15000;
         margin = contained ? radius * 10 : 0;
       }
       break;
     case 'd':
-      if (radiusIn - 10 >= 50) {
-        radiusIn -= 10;
+      if (radiusIn - 5 >= 100) {
+        radiusIn -= 5;
         radius = (radiusIn * radiusIn + (float)(maxX * maxY)) / 15000;
         margin = contained ? radius * 10 : 0;
       }
       break;
     case 'I':
 
-      if (color != TB_WHITE || custom || gradient1)
+      if (color != TB_WHITE || custom || gradient1 )
         if (rim + 1 <= 5) {
           rim++;
           sumConst2 = sumConst * (1 + (float)(0.25 * rim));
@@ -324,44 +359,36 @@ void set_random_colors( short level){
   fix_rim_color();
 }
 
-int set_color(short *var, char *optarg) {
-
-  if (strcmp(optarg, "red") == 0) {
-    *var = TB_RED;
-  } else if (strcmp(optarg, "yellow") == 0) {
-    *var = TB_YELLOW;
-  } else if (strcmp(optarg, "blue") == 0) {
-    *var = TB_BLUE;
-  } else if (strcmp(optarg, "green") == 0) {
-    *var = TB_GREEN;
-  } else if (strcmp(optarg, "magenta") == 0) {
-    *var = TB_MAGENTA;
-  } else if (strcmp(optarg, "cyan") == 0) {
-    *var = TB_CYAN;
-  } else if (strcmp(optarg, "black") == 0) {
-    *var = TB_BLACK;
-  } else if (strcmp(optarg, "white") == 0) {
-    *var = TB_WHITE;
-  } else {
-    printf("Unknown color: %s\n", optarg);
-    return 0;
-  }
-  return 1;
-}
-
 int parse_options(int argc, char *argv[]) {
   if (argc == 1)
     return 1;
+  
   int c;
-  while ((c = getopt(argc, argv, ":c:k:s:r:R:b:F:Cp:hg:G:")) != -1) {
+  // First pass to check for gradient mode
+  optind = 1;  // Reset getopt
+  while ((c = getopt(argc, argv, ":c:k:s:r:R:b:F:Cp:hg")) != -1) {
+    if (c == 'g') {
+      gradient1 = 1;
+      if (!tb_has_truecolor()) {
+        fprintf(stderr, "The terminal does not support truecolor\n");
+        return 0;
+      }
+      break;
+    }
+  }
+
+  // Reset getopt for second pass
+  optind = 1;
+  while ((c = getopt(argc, argv, ":c:k:s:r:R:b:F:Cp:hg")) != -1) {
     switch (c) {
     case 'c':
-      if (!set_color(&color, optarg))
+      if (!set_color(&color, baseColor, optarg, gradient1))
         return 0;
       break;
     case 'k':
-      if (!set_color(&color2, optarg))
+      if (!set_color(&color2, baseColor2, optarg, gradient1))
         return 0;
+      gradient2 = gradient1;  // If we're using gradient, enable the second gradient too
       break;
     case 's':
       speedMult = atoi(optarg);
@@ -378,18 +405,16 @@ int parse_options(int argc, char *argv[]) {
       }
       break;
     case 'r':
-      radiusIn = 50 + atoi(optarg) * 10;
-      if (radiusIn > 150 || radiusIn < 50) {
+      radiusIn = 100 + atoi(optarg) * 5;
+      if (radiusIn > 150 || radiusIn < 100) {
         printf("Invalid radius, only values between 1 and 10 are allowed\n");
         return 0;
       }
       break;
-
     case 'b':
       nballs = atoi(optarg);
       if (nballs > MAX_NBALLS || nballs < MIN_NBALLS) {
-
-        printf("Invalid number of metaballs, only values between %i and %i are"
+        printf("Invalid number of metaballs, only values between %i and %i are "
                "allowed\n",
                MIN_NBALLS, MAX_NBALLS);
         return 0;
@@ -403,7 +428,7 @@ int parse_options(int argc, char *argv[]) {
       break;
     case 'p':
       party = atoi(optarg);
-      if (party < 0 || party > 3 ) {
+      if (party < 0 || party > 3) {
         printf("Invalid party mode, only values between 1 and 3 are allowed\n");
         return 0;
       }
@@ -413,20 +438,7 @@ int parse_options(int argc, char *argv[]) {
       return 0;
       break;
     case 'g':
-      if (!tb_has_truecolor()){
-        fprintf(stderr, "The terminal does not have support for truecolor\n");
-        return 0;
-      }
-      sscanf( optarg, "%02x%02x%02x", &baseColor[0], &baseColor[1], &baseColor[2] );
-      gradient1 = 1;
-      break;
-    case 'G':
-      if (!tb_has_truecolor()){
-        fprintf(stderr, "The terminal does not have support for truecolor\n");
-        return 0;
-      }
-      sscanf( optarg, "%02x%02x%02x", &baseColor2[0], &baseColor2[1], &baseColor2[2] );
-      gradient2 = 1;
+      // Already handled in first pass
       break;
     case ':':
       fprintf(stderr, "Option -%c requires an operand\n", optopt);
@@ -444,8 +456,13 @@ void print_help() {
   printf(
       "Usage: lavat [OPTIONS]\n"
       "OPTIONS:\n"
-      "  -c <COLOR>          Set color. Available colours: red, blue, yellow, "
-      "green, cyan, magenta, white and black. \n"
+      "  -g                  Enable gradient mode with truecolor support.\n"
+      "                      Changes how -c and -k options work.\n"
+      "  -c <COLOR>          Set color. In normal mode, available colors are: red, blue, yellow, "
+      "green, cyan, magenta, white, and black.\n"
+      "                      In gradient mode (-g), use hex format: RRGGBB (e.g., FF0000 for red).\n"
+      "  -k <COLOR>          Set the rim color. Same format options as -c.\n"
+      "                      In gradient mode, this sets the second color for the gradient.\n"
       "  -s <SPEED>          Set the speed, from 1 to 10. (default 5)\n"
       "  -r <RADIUS>         Set the radius of the metaballs, from 1 to 10. "
       "(default: 5)\n"
@@ -455,8 +472,6 @@ void print_help() {
       "color\n"
       "                      If you use Kitty or Alacritty you must use it "
       "with the -k option to see the rim.\n"
-      "  -k <COLOR>          Set the color of the rim if there is one."
-      " Available colours: red, blue, yellow, green, cyan, magenta, white and black. \n"
       "  -b <NBALLS>         Set the number of metaballs in the simulation, "
       "from %i to %i. (default: 10)\n"
       "  -F <CHARS>          Allows for a custom set of chars to be used\n"
@@ -481,9 +496,13 @@ void print_help() {
       "  p                   TURN ON THE PARTY AND CYCLE THROUGH THE PARTY MODES "
       "(it can also turns off the party).\n"
       "(Tip: Zoom out in your terminal before running the program to get a "
-      "better resolution of the lava).\n",
+      "better resolution of the lava).\n"
+      "EXAMPLES:\n"
+      "  lavat -c green -k red        Use named colors in normal mode\n"
+      "  lavat -g -c 00FF00 -k FF0000 Use hex colors in gradient mode\n",
       MIN_NBALLS, MAX_NBALLS);
 }
+
 void set_pallete(){
   int avgColor= (baseColor[0] + baseColor[1] + baseColor[2])/3;
   int blackfactor[5]; 
@@ -522,7 +541,6 @@ void set_pallete2() {
 }
 
 uintattr_t get_color(float val) {
-
     val = (val - sumConst)/(0.001*(rim+1)); 
     
     if (val > 10) {
@@ -532,6 +550,4 @@ uintattr_t get_color(float val) {
     }
 
     return pallete[(int)val];     
-
 }
-
