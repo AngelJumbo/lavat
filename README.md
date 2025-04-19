@@ -22,13 +22,17 @@ $ paru -S lavat-git
 ```
 Usage: lavat [OPTIONS]
 OPTIONS:
-  -c <COLOR>          Set color. Available colours: red, blue, yellow, green, cyan, magenta, white and black.
+  -g                  Enable gradient mode with truecolor support.
+                      Changes how -c and -k options work.
+  -c <COLOR>          Set color. In normal mode, available colors are: red, blue, yellow, green, cyan, magenta, white, and black.
+                      In gradient mode (-g), use hex format: RRGGBB (e.g., FF0000 for red).
+  -k <COLOR>          Set the rim color. Same format options as -c.
+                      In gradient mode, this sets the second color for the gradient.
   -s <SPEED>          Set the speed, from 1 to 10. (default 5)
   -r <RADIUS>         Set the radius of the metaballs, from 1 to 10. (default: 5)
   -R <RIM>            Set a rim for each metaball, sizes from 1 to 5.(default: none)
                       This option does not work with the default color
                       If you use Kitty or Alacritty you must use it with the -k option to see the rim.
-  -k <COLOR>          Set the color of the rim if there is one. Available colours: red, blue, yellow, green, cyan, magenta, white and black.
   -b <NBALLS>         Set the number of metaballs in the simulation, from 5 to 20. (default: 10)
   -F <CHARS>          Allows for a custom set of chars to be used
                       Only ascii symbols are supported for now, wide/unicode chars may appear broken.
@@ -49,6 +53,9 @@ RUNTIME CONTROLS:
   -                   Decrease speed.
   p                   TURN ON THE PARTY AND CYCLE THROUGH THE PARTY MODES (it can also turns off the party).
 (Tip: Zoom out in your terminal before running the program to get a better resolution of the lava).
+EXAMPLES:
+  lavat -c green -k red        Use named colors in normal mode
+  lavat -g -c 00FF00 -k FF0000 Use hex colors in gradient mode
 ```
 
 ## Demo
