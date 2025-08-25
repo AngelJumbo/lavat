@@ -12,7 +12,7 @@ cd lavat
 sudo make install
 ```
 
-This program is also available through the following package managers:
+This program is also available from the following repositories:
 
 [![Packaging status](https://repology.org/badge/vertical-allrepos/lavat.svg)](https://repology.org/project/lavat/versions)
 
