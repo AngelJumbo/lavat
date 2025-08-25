@@ -13,6 +13,7 @@ sudo make install
 ```
 
 This program is also available through the following package managers:
+
 [![Packaging status](https://repology.org/badge/vertical-allrepos/lavat.svg)](https://repology.org/project/lavat/versions)
 
 
